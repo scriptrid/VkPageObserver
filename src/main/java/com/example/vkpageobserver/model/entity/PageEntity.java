@@ -18,7 +18,7 @@ public class PageEntity {
 
     @Id
     @Column(name = "id", nullable = false)
-    private Long id;
+    private Integer id;
 
     @Column(name = "first_name", nullable = false)
     private String firstName;
@@ -32,11 +32,16 @@ public class PageEntity {
     @Column(name = "location")
     private String location;
 
-    @ManyToMany(mappedBy = "observingPages")
-    private Set<UserEntity> users = new LinkedHashSet<>();
+
 
     @OneToMany(mappedBy = "page", orphanRemoval = true)
     private Set<ChangeEntity> changes = new LinkedHashSet<>();
+
+    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH})
+    @JoinTable(name = "pages_users",
+            joinColumns = @JoinColumn(name = "page_id"),
+            inverseJoinColumns = @JoinColumn(name = "user_id"))
+    private Set<UserEntity> users = new LinkedHashSet<>();
 
     @Override
     public boolean equals(Object o) {

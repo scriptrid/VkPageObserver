@@ -1,4 +1,4 @@
-package com.example.vkpageobserver.exeptions;
+package com.example.vkpageobserver.exсeptions;
 
 public class UsernameAlreadyExistsException extends RuntimeException {
 }

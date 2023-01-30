@@ -1,6 +1,6 @@
 package com.example.vkpageobserver.service;
 
-import com.example.vkpageobserver.exeptions.UsernameAlreadyExistsException;
+import com.example.vkpageobserver.exсeptions.UsernameAlreadyExistsException;
 import com.example.vkpageobserver.model.UserDetailsImpl;
 import com.example.vkpageobserver.model.dto.CreateUserDto;
 import com.example.vkpageobserver.model.entity.UserEntity;
