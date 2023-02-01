@@ -27,7 +27,7 @@ public class UserController {
     }
 
     @PostMapping("/register")
-    public void newUser(HttpServletRequest req,@RequestBody @Valid CreateUserDto dto) {
+    public void newUser(HttpServletRequest req, @RequestBody @Valid CreateUserDto dto) {
         userService.addUser(dto);
         doLogin(req, dto.username(), dto.password());
     }

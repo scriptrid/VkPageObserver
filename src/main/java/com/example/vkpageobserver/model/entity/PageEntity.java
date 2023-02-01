@@ -33,14 +33,11 @@ public class PageEntity {
     private String location;
 
 
-
     @OneToMany(mappedBy = "page", orphanRemoval = true)
     private Set<ChangeEntity> changes = new LinkedHashSet<>();
 
-    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH})
-    @JoinTable(name = "pages_users",
-            joinColumns = @JoinColumn(name = "page_id"),
-            inverseJoinColumns = @JoinColumn(name = "user_id"))
+
+    @ManyToMany(mappedBy = "observingPages")
     private Set<UserEntity> users = new LinkedHashSet<>();
 
     @Override
@@ -57,4 +54,7 @@ public class PageEntity {
     }
 
 
+    public void addUser(UserEntity user) {
+        users.add(user);
+    }
 }

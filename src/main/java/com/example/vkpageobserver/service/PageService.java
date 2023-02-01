@@ -20,14 +20,9 @@ public class PageService {
 
     @Transactional
     public void addPage(PageEntity page) {
-        if (pageRepository.existsById(page.getId())) {
-
+        if (!pageRepository.existsById(page.getId())) {
+            pageRepository.save(page);
         }
-        pageRepository.save(page);
-    }
-
-    public boolean pageExistsById(Integer id) {
-        return pageRepository.existsById(id);
     }
 
     public PageEntity getPage(Integer id) {
@@ -35,13 +30,25 @@ public class PageService {
 
     }
 
+    public boolean pageExistsById(Integer id) {
+        return pageRepository.existsById(id);
+    }
+
     public PageEntity toEntity(UserEntity user, GetResponse response) {
         PageEntity page = new PageEntity();
         page.setId(response.getId());
         page.setFirstName(response.getFirstName());
         page.setLastName(response.getLastName());
-        page.setBirthDate(LocalDate.parse(response.getBdate(), DateTimeFormatter.ofPattern("dd.[]M.yyyy")));
-        page.setLocation(response.getCity().getTitle());
+        if (response.getBdate() == null) {
+            page.setBirthDate(null);
+        } else {
+            page.setBirthDate(LocalDate.parse(response.getBdate(), DateTimeFormatter.ofPattern("dd.[]M.yyyy")));
+        }
+        if (response.getCity() == null) {
+            page.setLocation("UNKNOWN");
+        } else {
+            page.setLocation(response.getCity().getTitle());
+        }
         page.getUsers().add(user);
         return page;
     }

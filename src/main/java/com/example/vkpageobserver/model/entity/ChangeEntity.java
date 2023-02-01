@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.Hibernate;
 
+import java.time.LocalDateTime;
 import java.util.Objects;
 
 @Entity
@@ -18,10 +19,18 @@ public class ChangeEntity {
     @Column(name = "id", nullable = false)
     private Long id;
 
-
     @ManyToOne(optional = false)
     @JoinColumn(name = "page_id", nullable = false)
     private PageEntity page;
+
+    @Column(name = "before")
+    private String before;
+
+    @Column(name = "after")
+    private String after;
+
+    @Column(name = "time_of_change", nullable = false)
+    private LocalDateTime timeOfChange;
 
     @Override
     public boolean equals(Object o) {

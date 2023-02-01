@@ -14,7 +14,6 @@ spring:
     username: sa
     password: password
 
-#logging:
-#  level:
-#    web: debug
-#    root: debug
+logging:
+  level:
+    org.springframework.org.springframework.security: debug
