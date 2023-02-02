@@ -26,11 +26,9 @@ public class UserEntity {
     @Column(name = "password", nullable = false)
     private String password;
 
-    @ManyToMany
-    @JoinTable(name = "pages_users",
-            joinColumns = @JoinColumn(name = "user_id"),
-            inverseJoinColumns = @JoinColumn(name = "page_id"))
+    @ManyToMany(mappedBy = "users")
     private Set<PageEntity> observingPages = new LinkedHashSet<>();
+
 
     @Override
     public boolean equals(Object o) {
@@ -43,9 +41,5 @@ public class UserEntity {
     @Override
     public int hashCode() {
         return getClass().hashCode();
-    }
-
-    public void addPage(PageEntity page) {
-        observingPages.add(page);
     }
 }

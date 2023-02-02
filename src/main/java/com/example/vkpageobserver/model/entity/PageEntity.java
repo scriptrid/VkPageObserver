@@ -36,8 +36,10 @@ public class PageEntity {
     @OneToMany(mappedBy = "page", orphanRemoval = true)
     private Set<ChangeEntity> changes = new LinkedHashSet<>();
 
-
-    @ManyToMany(mappedBy = "observingPages")
+    @ManyToMany
+    @JoinTable(name = "pages_users",
+            joinColumns = @JoinColumn(name = "page_id"),
+            inverseJoinColumns = @JoinColumn(name = "user_id"))
     private Set<UserEntity> users = new LinkedHashSet<>();
 
     @Override
@@ -52,7 +54,6 @@ public class PageEntity {
     public int hashCode() {
         return getClass().hashCode();
     }
-
 
     public void addUser(UserEntity user) {
         users.add(user);

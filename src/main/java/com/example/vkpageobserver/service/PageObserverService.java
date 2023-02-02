@@ -6,97 +6,99 @@ import com.example.vkpageobserver.model.dto.ChangeDto;
 import com.example.vkpageobserver.model.dto.ObservingPageDto;
 import com.example.vkpageobserver.model.entity.PageEntity;
 import com.example.vkpageobserver.model.entity.UserEntity;
-import com.example.vkpageobserver.repository.PageRepository;
 import com.vk.api.sdk.client.VkApiClient;
 import com.vk.api.sdk.client.actors.ServiceActor;
 import com.vk.api.sdk.exceptions.ApiException;
 import com.vk.api.sdk.exceptions.ClientException;
 import com.vk.api.sdk.objects.users.Fields;
 import com.vk.api.sdk.objects.users.responses.GetResponse;
-import jakarta.validation.Valid;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
 public class PageObserverService {
-    private final UserService userService;
-    private final VkApiClient vk;
-    private final ServiceActor serviceActor;
-    private final List<Fields> searchingFields = List.of(
+    private static final List<Fields> SEARCHING_FIELDS = List.of(
             Fields.FIRST_NAME_NOM,
             Fields.LAST_NAME_NOM,
             Fields.BDATE,
             Fields.CITY
     );
-    private final PageService pageService;
-    private final PageRepository pageRepository;
 
-    public PageObserverService(UserService userService, VkApiClient vk, ServiceActor serviceActor,
+    private static final String NON_EXISTENT_USERNAME = "DELETED";
+
+    private final UserService userService;
+
+    private final PageService pageService;
+
+    private final VkApiClient vk;
+
+    private final ServiceActor serviceActor;
+
+
+
+    public PageObserverService(UserService userService,
                                PageService pageService,
-                               PageRepository pageRepository) {
+                               VkApiClient vk,
+                               ServiceActor serviceActor) {
         this.userService = userService;
+        this.pageService = pageService;
         this.vk = vk;
         this.serviceActor = serviceActor;
-        this.pageService = pageService;
-        this.pageRepository = pageRepository;
     }
 
-    public void addPageToUser(UserDetails userDetails, @Valid Integer id) {
+    @Transactional
+    public void addPageToUser(UserDetails userDetails, Integer pageId) {
         UserEntity user = userService.getUser(userDetails);
-        if (pageService.pageExistsById(id)) {
-            PageEntity page = pageService.getPage(id);
+        if (pageService.pageExistsById(pageId)) {
+            PageEntity page = pageService.getPage(pageId);
             if (userService.userHasAPage(user, page)) {
                 throw new PageAlreadyExists();
             }
-            setAssociation(user, page);
+            page.addUser(user);
         } else {
-            GetResponse response = executeRequest(String.valueOf(id));
-            if (response.getFirstName().equals("DELETED")) {
+            GetResponse response = executeRequest(String.valueOf(pageId));
+            if (response.getFirstName().equals(NON_EXISTENT_USERNAME)) {
                 throw new PageNotFoundException();
             }
-            PageEntity page = pageService.toEntity(user, response);
-            setAssociation(user, page);
-            pageService.addPage(page);
+            pageService.addPage(response, user);
         }
     }
 
-    public ObservingPageDto getObservingPage(UserDetails userDetails, @Valid Integer id) {
-        if (!pageRepository.existsById(id)) {
+    public ObservingPageDto getObservingPage(UserDetails userDetails, Integer pageId) {
+        if (!pageService.pageExistsById(pageId)) {
             throw new PageNotFoundException();
         }
         UserEntity user = userService.getUser(userDetails);
-        PageEntity page = pageService.getPage(id);
+        PageEntity page = pageService.getPage(pageId);
         if (!userService.userHasAPage(user, page)) {
             throw new PageNotFoundException();
         }
         return fromPageEntityToDto(page);
 
     }
-
-    public void deletePageFromUser(UserDetails userDetails, Integer id) {
-        if (!isValidUserAndPage(userDetails, id)) {
+    @Transactional
+    public void deletePageFromUser(UserDetails userDetails, Integer pageId) {
+        if (!isValidUserAndPage(userDetails, pageId)) {
             throw new PageNotFoundException();
         } else {
             userService
                     .getUser(userDetails)
                     .getObservingPages()
-                    .remove(pageService.getPage(id));
+                    .remove(pageService.getPage(pageId));
         }
     }
 
-    private boolean isValidUserAndPage(UserDetails userDetails, Integer id) {
-        if (!pageRepository.existsById(id)) {
+    private boolean isValidUserAndPage(UserDetails userDetails, Integer pageId) {
+        if (!pageService.pageExistsById(pageId)) {
             return false;
         }
         UserEntity user = userService.getUser(userDetails);
-        PageEntity page = pageService.getPage(id);
-        if (!userService.userHasAPage(user, page)) {
-            return false;
-        }
-        return true;
+        PageEntity page = pageService.getPage(pageId);
+        return userService.userHasAPage(user, page);
     }
 
     private ObservingPageDto fromPageEntityToDto(PageEntity page) {
@@ -117,18 +119,13 @@ public class PageObserverService {
 
     }
 
-    private void setAssociation(UserEntity user, PageEntity page) {
-        user.addPage(page);
-        page.addUser(user);
-    }
-
-    private GetResponse executeRequest(String id) {
+    private GetResponse executeRequest(String pageId) {
         try {
             return vk
                     .users()
                     .get(serviceActor)
-                    .userIds(String.valueOf(id))
-                    .fields(searchingFields)
+                    .userIds(String.valueOf(pageId))
+                    .fields(SEARCHING_FIELDS)
                     .execute()
                     .get(0);
         } catch (ApiException | ClientException e) {

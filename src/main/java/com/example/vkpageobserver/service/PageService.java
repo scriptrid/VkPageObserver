@@ -1,5 +1,6 @@
 package com.example.vkpageobserver.service;
 
+import com.example.vkpageobserver.exсeptions.PageAlreadyExists;
 import com.example.vkpageobserver.model.entity.PageEntity;
 import com.example.vkpageobserver.model.entity.UserEntity;
 import com.example.vkpageobserver.repository.PageRepository;
@@ -19,22 +20,15 @@ public class PageService {
     }
 
     @Transactional
-    public void addPage(PageEntity page) {
-        if (!pageRepository.existsById(page.getId())) {
-            pageRepository.save(page);
+    public void addPage(GetResponse response, UserEntity user) {
+        if (pageRepository.existsById(response.getId())) {
+            throw new PageAlreadyExists();
         }
+        PageEntity page = toEntity(response, user);
+        pageRepository.save(page);
     }
 
-    public PageEntity getPage(Integer id) {
-        return pageRepository.getReferenceById(id);
-
-    }
-
-    public boolean pageExistsById(Integer id) {
-        return pageRepository.existsById(id);
-    }
-
-    public PageEntity toEntity(UserEntity user, GetResponse response) {
+    private PageEntity toEntity(GetResponse response, UserEntity user) {
         PageEntity page = new PageEntity();
         page.setId(response.getId());
         page.setFirstName(response.getFirstName());
@@ -49,7 +43,16 @@ public class PageService {
         } else {
             page.setLocation(response.getCity().getTitle());
         }
-        page.getUsers().add(user);
+        page.addUser(user);
         return page;
+    }
+
+    public PageEntity getPage(Integer id) {
+        return pageRepository.findById(id).orElseThrow();
+
+    }
+
+    public boolean pageExistsById(Integer id) {
+        return pageRepository.existsById(id);
     }
 }
