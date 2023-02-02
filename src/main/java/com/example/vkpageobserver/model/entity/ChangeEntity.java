@@ -5,7 +5,7 @@ import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.Hibernate;
 
-import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import java.util.Objects;
 
 @Entity
@@ -30,7 +30,7 @@ public class ChangeEntity {
     private String after;
 
     @Column(name = "time_of_change", nullable = false)
-    private LocalDateTime timeOfChange;
+    private ZonedDateTime timeOfChange;
 
     @Override
     public boolean equals(Object o) {

@@ -1,9 +1,9 @@
 package com.example.vkpageobserver.model.dto;
 
-import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 
 public record ChangeDto(
-        LocalDateTime timeOfChange,
+        ZonedDateTime timeOfChange,
         String before,
         String after
 ) {
