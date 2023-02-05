@@ -11,7 +11,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.stream.Collectors;
+import java.util.Comparator;
 
 @Service
 public class PageInteractionService {
@@ -93,7 +93,8 @@ public class PageInteractionService {
                                 c.getBefore(),
                                 c.getAfter()
                         ))
-                        .collect(Collectors.toSet())
+                        .sorted(Comparator.comparing(ChangeDto::timeOfChange).reversed())
+                        .toList()
         );
 
     }
