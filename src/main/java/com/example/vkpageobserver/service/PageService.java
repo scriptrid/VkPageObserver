@@ -1,6 +1,6 @@
 package com.example.vkpageobserver.service;
 
-import com.example.vkpageobserver.exсeptions.PageAlreadyExists;
+import com.example.vkpageobserver.exceptions.PageAlreadyExists;
 import com.example.vkpageobserver.model.entity.ChangeEntity;
 import com.example.vkpageobserver.model.entity.PageEntity;
 import com.example.vkpageobserver.model.entity.UserEntity;
@@ -76,28 +76,28 @@ public class PageService {
         pageRepository.findAll().forEach(this::updatePage);
     }
 
-    public void updatePage(PageEntity currentPage) {
+    private void updatePage(PageEntity currentPage) {
         PageEntity actualPage = toEntity(vkApiService.requestPage(String.valueOf(currentPage.getId())));
         if (!currentPage.getFirstName().equals(actualPage.getFirstName())) {
-            changesRepository.save(createEntity(currentPage, currentPage.getFirstName(), actualPage.getFirstName()));
+            changesRepository.save(createChangeEntity(currentPage, currentPage.getFirstName(), actualPage.getFirstName()));
             currentPage.setFirstName(actualPage.getFirstName());
         }
         if (!currentPage.getLastName().equals(actualPage.getLastName())) {
-            changesRepository.save(createEntity(currentPage, currentPage.getLastName(), actualPage.getLastName()));
+            changesRepository.save(createChangeEntity(currentPage, currentPage.getLastName(), actualPage.getLastName()));
             currentPage.setLastName(actualPage.getLastName());
         }
         if (!currentPage.getBirthDate().isEqual(actualPage.getBirthDate())) {
-            changesRepository.save(createEntity(currentPage, currentPage.getBirthDate().toString(),
+            changesRepository.save(createChangeEntity(currentPage, currentPage.getBirthDate().toString(),
                     actualPage.getBirthDate().toString()));
             currentPage.setBirthDate(actualPage.getBirthDate());
         }
         if (!currentPage.getLocation().equals(actualPage.getLocation())) {
-            changesRepository.save(createEntity(currentPage, currentPage.getLocation(), actualPage.getLocation()));
+            changesRepository.save(createChangeEntity(currentPage, currentPage.getLocation(), actualPage.getLocation()));
             currentPage.setLocation(actualPage.getLocation());
         }
     }
 
-    private ChangeEntity createEntity(PageEntity page, String before, String after) {
+    private ChangeEntity createChangeEntity(PageEntity page, String before, String after) {
         ChangeEntity change = new ChangeEntity();
         change.setBefore(before);
         change.setAfter(after);

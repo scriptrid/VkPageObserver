@@ -1,8 +1,8 @@
 package com.example.vkpageobserver.controller;
 
-import com.example.vkpageobserver.exсeptions.PageAlreadyExists;
-import com.example.vkpageobserver.exсeptions.PageNotFoundException;
-import com.example.vkpageobserver.exсeptions.UsernameAlreadyExistsException;
+import com.example.vkpageobserver.exceptions.PageAlreadyExists;
+import com.example.vkpageobserver.exceptions.PageNotFoundException;
+import com.example.vkpageobserver.exceptions.UsernameAlreadyExistsException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;

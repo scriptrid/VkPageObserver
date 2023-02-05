@@ -1,7 +1,7 @@
 package com.example.vkpageobserver.service;
 
-import com.example.vkpageobserver.exсeptions.PageAlreadyExists;
-import com.example.vkpageobserver.exсeptions.PageNotFoundException;
+import com.example.vkpageobserver.exceptions.PageAlreadyExists;
+import com.example.vkpageobserver.exceptions.PageNotFoundException;
 import com.example.vkpageobserver.model.dto.ChangeDto;
 import com.example.vkpageobserver.model.dto.ObservingPageDto;
 import com.example.vkpageobserver.model.entity.PageEntity;

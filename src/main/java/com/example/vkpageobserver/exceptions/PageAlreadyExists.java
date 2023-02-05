@@ -1,4 +1,4 @@
-package com.example.vkpageobserver.exсeptions;
+package com.example.vkpageobserver.exceptions;
 
 public class PageAlreadyExists extends RuntimeException {
 }
