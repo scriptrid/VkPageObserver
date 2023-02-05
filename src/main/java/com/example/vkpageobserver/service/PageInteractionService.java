@@ -40,7 +40,7 @@ public class PageInteractionService {
             }
             page.addUser(user);
         } else {
-            GetResponse response = vkApiService.executeRequest(String.valueOf(pageId));
+            GetResponse response = vkApiService.requestPage(String.valueOf(pageId));
             if (response.getFirstName().equals(NON_EXISTENT_USERNAME)) {
                 throw new PageNotFoundException();
             }

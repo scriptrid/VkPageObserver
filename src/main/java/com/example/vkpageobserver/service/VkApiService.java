@@ -27,7 +27,7 @@ public class VkApiService {
         this.serviceActor = serviceActor;
     }
 
-    public GetResponse executeRequest(String pageId) {
+    public GetResponse requestPage(String pageId) {
         try {
             return vk
                     .users()

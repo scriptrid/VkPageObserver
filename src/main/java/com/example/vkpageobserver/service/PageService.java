@@ -77,7 +77,7 @@ public class PageService {
     }
 
     public void updatePage(PageEntity currentPage) {
-        PageEntity actualPage = toEntity(vkApiService.executeRequest(String.valueOf(currentPage.getId())));
+        PageEntity actualPage = toEntity(vkApiService.requestPage(String.valueOf(currentPage.getId())));
         if (!currentPage.getFirstName().equals(actualPage.getFirstName())) {
             changesRepository.save(createEntity(currentPage, currentPage.getFirstName(), actualPage.getFirstName()));
             currentPage.setFirstName(actualPage.getFirstName());
