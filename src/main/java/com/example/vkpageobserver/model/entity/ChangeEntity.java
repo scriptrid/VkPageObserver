@@ -28,8 +28,8 @@ public class ChangeEntity {
     @Column(name = "time_of_change", nullable = false)
     private ZonedDateTime timeOfChange;
 
-    @ManyToOne
-    @JoinColumn(name = "page_id")
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "page_id", nullable = false)
     private PageEntity page;
 
     @Override
