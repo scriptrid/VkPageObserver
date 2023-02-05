@@ -33,14 +33,16 @@ public class PageEntity {
     private String location;
 
 
-    @OneToMany(mappedBy = "page", orphanRemoval = true)
-    private Set<ChangeEntity> changes = new LinkedHashSet<>();
+
 
     @ManyToMany
     @JoinTable(name = "pages_users",
             joinColumns = @JoinColumn(name = "page_id"),
             inverseJoinColumns = @JoinColumn(name = "user_id"))
     private Set<UserEntity> users = new LinkedHashSet<>();
+
+    @OneToMany(mappedBy = "page", orphanRemoval = true)
+    private Set<ChangeEntity> changes = new LinkedHashSet<>();
 
     @Override
     public boolean equals(Object o) {

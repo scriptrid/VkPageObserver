@@ -6,48 +6,28 @@ import com.example.vkpageobserver.model.dto.ChangeDto;
 import com.example.vkpageobserver.model.dto.ObservingPageDto;
 import com.example.vkpageobserver.model.entity.PageEntity;
 import com.example.vkpageobserver.model.entity.UserEntity;
-import com.vk.api.sdk.client.VkApiClient;
-import com.vk.api.sdk.client.actors.ServiceActor;
-import com.vk.api.sdk.exceptions.ApiException;
-import com.vk.api.sdk.exceptions.ClientException;
-import com.vk.api.sdk.objects.users.Fields;
 import com.vk.api.sdk.objects.users.responses.GetResponse;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
-public class PageObserverService {
-    private static final List<Fields> SEARCHING_FIELDS = List.of(
-            Fields.FIRST_NAME_NOM,
-            Fields.LAST_NAME_NOM,
-            Fields.BDATE,
-            Fields.CITY
-    );
-
+public class PageInteractionService {
     private static final String NON_EXISTENT_USERNAME = "DELETED";
 
     private final UserService userService;
 
     private final PageService pageService;
-
-    private final VkApiClient vk;
-
-    private final ServiceActor serviceActor;
+    private final VkApiService vkApiService;
 
 
-
-    public PageObserverService(UserService userService,
-                               PageService pageService,
-                               VkApiClient vk,
-                               ServiceActor serviceActor) {
+    public PageInteractionService(UserService userService,
+                                  PageService pageService, VkApiService vkApiService) {
         this.userService = userService;
         this.pageService = pageService;
-        this.vk = vk;
-        this.serviceActor = serviceActor;
+        this.vkApiService = vkApiService;
     }
 
     @Transactional
@@ -60,7 +40,7 @@ public class PageObserverService {
             }
             page.addUser(user);
         } else {
-            GetResponse response = executeRequest(String.valueOf(pageId));
+            GetResponse response = vkApiService.executeRequest(String.valueOf(pageId));
             if (response.getFirstName().equals(NON_EXISTENT_USERNAME)) {
                 throw new PageNotFoundException();
             }
@@ -85,10 +65,9 @@ public class PageObserverService {
         if (!isValidUserAndPage(userDetails, pageId)) {
             throw new PageNotFoundException();
         } else {
-            userService
-                    .getUser(userDetails)
-                    .getObservingPages()
-                    .remove(pageService.getPage(pageId));
+            UserEntity user = userService.getUser(userDetails);
+            PageEntity page = pageService.getPage(pageId);
+            page.getUsers().remove(user);
         }
     }
 
@@ -118,19 +97,4 @@ public class PageObserverService {
         );
 
     }
-
-    private GetResponse executeRequest(String pageId) {
-        try {
-            return vk
-                    .users()
-                    .get(serviceActor)
-                    .userIds(String.valueOf(pageId))
-                    .fields(SEARCHING_FIELDS)
-                    .execute()
-                    .get(0);
-        } catch (ApiException | ClientException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
 }

@@ -19,10 +19,6 @@ public class ChangeEntity {
     @Column(name = "id", nullable = false)
     private Long id;
 
-    @ManyToOne(optional = false)
-    @JoinColumn(name = "page_id", nullable = false)
-    private PageEntity page;
-
     @Column(name = "before")
     private String before;
 
@@ -31,6 +27,10 @@ public class ChangeEntity {
 
     @Column(name = "time_of_change", nullable = false)
     private ZonedDateTime timeOfChange;
+
+    @ManyToOne
+    @JoinColumn(name = "page_id")
+    private PageEntity page;
 
     @Override
     public boolean equals(Object o) {
