@@ -1,5 +1,6 @@
 package com.example.vkpageobserver.configuration;
 
+import com.example.vkpageobserver.properties.VkApiProperties;
 import com.vk.api.sdk.client.VkApiClient;
 import com.vk.api.sdk.client.actors.ServiceActor;
 import com.vk.api.sdk.exceptions.ApiException;
@@ -24,14 +25,13 @@ public class ApplicationConfiguration {
         return new VkApiClient(new HttpTransportClient());
     }
     @Bean
-    public ServiceActor serviceActor() {
+    public ServiceActor serviceActor(VkApiProperties properties) {
         try {
-            Integer vkApiId = 51537876;
-            String vkApiClientSecret= "vt6EgyadqkvZJB27sDvf";
+
             ServiceClientCredentialsFlowResponse authResponse = vk().oAuth()
-                    .serviceClientCredentialsFlow(vkApiId, vkApiClientSecret)
+                    .serviceClientCredentialsFlow(properties.getAppId(), properties.getSecretKey())
                     .execute();
-            return new ServiceActor(vkApiId, authResponse.getAccessToken());
+            return new ServiceActor(properties.getAppId(), authResponse.getAccessToken());
         } catch (ApiException | ClientException e) {
             throw new RuntimeException(e);
         }
