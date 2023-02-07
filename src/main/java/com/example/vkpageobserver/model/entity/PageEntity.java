@@ -5,7 +5,6 @@ import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.Hibernate;
 
-import java.time.LocalDate;
 import java.util.LinkedHashSet;
 import java.util.Objects;
 import java.util.Set;
@@ -27,7 +26,7 @@ public class PageEntity {
     private String lastName;
 
     @Column(name = "birth_date")
-    private LocalDate birthDate;
+    private String birthDate;
 
     @Column(name = "location")
     private String location;

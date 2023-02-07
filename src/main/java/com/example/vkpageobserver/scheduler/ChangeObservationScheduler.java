@@ -15,7 +15,7 @@ public class ChangeObservationScheduler {
         this.pageService = pageService;
     }
 
-    @Scheduled(fixedDelay = 10000)
+    @Scheduled(fixedDelayString = "${observer.delay}", initialDelayString = "${observer.initialDelay}")
     public void checkChanges() {
         log.info("Updating pages...");
         pageService.updatePages();

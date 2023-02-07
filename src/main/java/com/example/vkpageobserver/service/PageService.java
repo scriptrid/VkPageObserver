@@ -11,9 +11,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDate;
 import java.time.ZonedDateTime;
-import java.time.format.DateTimeFormatter;
+import java.util.List;
 
 @Service
 @Slf4j
@@ -53,12 +52,12 @@ public class PageService {
         page.setFirstName(response.getFirstName());
         page.setLastName(response.getLastName());
         if (response.getBdate() == null) {
-            page.setBirthDate(null);
+            page.setBirthDate("unknown");
         } else {
-            page.setBirthDate(LocalDate.parse(response.getBdate(), DateTimeFormatter.ofPattern("dd.[]M.yyyy")));
+            page.setBirthDate(response.getBdate());
         }
         if (response.getCity() == null) {
-            page.setLocation("UNKNOWN");
+            page.setLocation("unknown");
         } else {
             page.setLocation(response.getCity().getTitle());
         }
@@ -72,12 +71,26 @@ public class PageService {
     }
 
     @Transactional
-    public void updatePages() {
-        pageRepository.findAll().forEach(this::updatePage);
+    public void deletePage(PageEntity page) {
+        pageRepository.delete(page);
     }
 
-    private void updatePage(PageEntity currentPage) {
-        PageEntity actualPage = toEntity(vkApiService.requestPage(String.valueOf(currentPage.getId())));
+    @Transactional
+    public void updatePages() {
+        List<PageEntity> pages = pageRepository.findAll();
+        List<String> ids = pages
+                .stream()
+                .map(page -> String.valueOf(page.getId()))
+                .toList();
+        List<GetResponse> requestedPages = vkApiService.requestPages(ids);
+        for (int i = 0; i < pages.size(); i++) {
+             updatePage(pages.get(i), requestedPages.get(i));
+        }
+
+    }
+
+    private void updatePage(PageEntity currentPage, GetResponse requestedPage) {
+        PageEntity actualPage = toEntity(requestedPage);
         if (!currentPage.getFirstName().equals(actualPage.getFirstName())) {
             changesRepository.save(createChangeEntity(currentPage, currentPage.getFirstName(), actualPage.getFirstName()));
             currentPage.setFirstName(actualPage.getFirstName());
@@ -86,9 +99,9 @@ public class PageService {
             changesRepository.save(createChangeEntity(currentPage, currentPage.getLastName(), actualPage.getLastName()));
             currentPage.setLastName(actualPage.getLastName());
         }
-        if (!currentPage.getBirthDate().isEqual(actualPage.getBirthDate())) {
-            changesRepository.save(createChangeEntity(currentPage, currentPage.getBirthDate().toString(),
-                    actualPage.getBirthDate().toString()));
+        if (!currentPage.getBirthDate().equals(actualPage.getBirthDate())) {
+            changesRepository.save(createChangeEntity(currentPage, currentPage.getBirthDate(),
+                    actualPage.getBirthDate()));
             currentPage.setBirthDate(actualPage.getBirthDate());
         }
         if (!currentPage.getLocation().equals(actualPage.getLocation())) {
@@ -106,5 +119,4 @@ public class PageService {
         log.info("New change before: {}, after: {}", before, after);
         return change;
     }
-
 }

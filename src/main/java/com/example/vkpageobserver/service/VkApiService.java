@@ -40,4 +40,17 @@ public class VkApiService {
             throw new RuntimeException(e);
         }
     }
+
+    public List<GetResponse> requestPages(List<String> pageIds) {
+        try {
+            return vk
+                    .users()
+                    .get(serviceActor)
+                    .userIds(pageIds)
+                    .fields(SEARCHING_FIELDS)
+                    .execute();
+        } catch (ApiException | ClientException e) {
+            throw new RuntimeException(e);
+        }
+    }
 }

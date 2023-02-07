@@ -9,11 +9,11 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/page")
-public class PageObserverController {
+public class PageInteractionController {
 
     private final PageInteractionService pageInteractionService;
 
-    public PageObserverController(PageInteractionService pageInteractionService) {
+    public PageInteractionController(PageInteractionService pageInteractionService) {
         this.pageInteractionService = pageInteractionService;
     }
 

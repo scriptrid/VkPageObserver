@@ -68,7 +68,11 @@ public class PageInteractionService {
             UserEntity user = userService.getUser(userDetails);
             PageEntity page = pageService.getPage(pageId);
             page.getUsers().remove(user);
+            if (page.getUsers().isEmpty()) {
+                pageService.deletePage(page);
+            }
         }
+
     }
 
     private boolean isValidUserAndPage(UserDetails userDetails, Integer pageId) {
