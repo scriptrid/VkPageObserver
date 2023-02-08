@@ -14,10 +14,6 @@ spring:
     username: sa
     password: password
 
-logging:
-  level:
-    org.springframework.org.springframework.security: debug
-
 observer:
   initialDelay: 5000
   delay: 5000
