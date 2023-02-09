@@ -35,9 +35,10 @@ public class PageInteractionService {
         UserEntity user = userService.getUser(userDetails);
         if (pageService.pageExistsById(pageId)) {
             PageEntity page = pageService.getPage(pageId);
-            if (userService.userHasAPage(user, page)) {
+            if (userHasAPage(user, page)) {
                 throw new PageAlreadyExists();
             }
+            user.getObservingPages().add(page);
             page.addUser(user);
         } else {
             GetResponse response = vkApiService.requestPage(String.valueOf(pageId));
@@ -54,7 +55,7 @@ public class PageInteractionService {
         }
         UserEntity user = userService.getUser(userDetails);
         PageEntity page = pageService.getPage(pageId);
-        if (!userService.userHasAPage(user, page)) {
+        if (!userHasAPage(user, page)) {
             throw new PageNotFoundException();
         }
         return fromPageEntityToDto(page);
@@ -81,7 +82,7 @@ public class PageInteractionService {
         }
         UserEntity user = userService.getUser(userDetails);
         PageEntity page = pageService.getPage(pageId);
-        return userService.userHasAPage(user, page);
+        return userHasAPage(user, page);
     }
 
     private ObservingPageDto fromPageEntityToDto(PageEntity page) {
@@ -102,4 +103,9 @@ public class PageInteractionService {
         );
 
     }
+
+    public boolean userHasAPage(UserEntity user, PageEntity page) {
+        return user.getObservingPages().contains(page);
+    }
+
 }

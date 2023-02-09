@@ -29,12 +29,13 @@ public class PageService {
     }
 
     @Transactional
-    public void addPage(GetResponse response, UserEntity user) {
+    public PageEntity addPage(GetResponse response, UserEntity user) {
         if (pageRepository.existsById(response.getId())) {
             throw new PageAlreadyExists();
         }
         PageEntity page = toEntity(response, user);
-        pageRepository.save(page);
+        user.getObservingPages().add(page);
+        return pageRepository.save(page);
     }
 
     public PageEntity getPage(Integer id) {
@@ -89,7 +90,7 @@ public class PageService {
 
     }
 
-    private void updatePage(PageEntity currentPage, GetResponse requestedPage) {
+    public void updatePage(PageEntity currentPage, GetResponse requestedPage) {
         PageEntity actualPage = toEntity(requestedPage);
         if (!currentPage.getFirstName().equals(actualPage.getFirstName())) {
             changesRepository.save(createChangeEntity(currentPage, currentPage.getFirstName(), actualPage.getFirstName()));
