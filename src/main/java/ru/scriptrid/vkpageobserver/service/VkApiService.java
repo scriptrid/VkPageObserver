@@ -28,17 +28,7 @@ public class VkApiService {
     }
 
     public GetResponse requestPage(String pageId) {
-        try {
-            return vk
-                    .users()
-                    .get(serviceActor)
-                    .userIds(String.valueOf(pageId))
-                    .fields(SEARCHING_FIELDS)
-                    .execute()
-                    .get(0);
-        } catch (ApiException | ClientException e) {
-            throw new RuntimeException(e);
-        }
+        return requestPages(List.of(pageId)).get(0);
     }
 
     public List<GetResponse> requestPages(List<String> pageIds) {

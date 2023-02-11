@@ -43,7 +43,7 @@ public class PageChangesService {
 
     }
 
-    public void updatePage(PageEntity currentPage, GetResponse requestedPage) {
+    private void updatePage(PageEntity currentPage, GetResponse requestedPage) {
         PageEntity actualPage = pageMapper.toEntity(requestedPage);
         if (!currentPage.getFirstName().equals(actualPage.getFirstName())) {
             changesRepository.save(createChangeEntity(currentPage, currentPage.getFirstName(), actualPage.getFirstName()));
