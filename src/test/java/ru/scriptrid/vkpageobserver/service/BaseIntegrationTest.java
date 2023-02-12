@@ -38,7 +38,11 @@ public class BaseIntegrationTest {
         return response;
     }
 
+    protected UserEntity getUser(String username) {
+        return userService.addUser(new CreateUserDto(username, "11111111"));
+    }
+
     protected UserEntity getUser() {
-        return userService.addUser(new CreateUserDto("test", "11111111"));
+        return getUser("test");
     }
 }

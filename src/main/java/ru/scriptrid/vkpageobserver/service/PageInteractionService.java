@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.scriptrid.vkpageobserver.exceptions.PageAlreadyExistsException;
 import ru.scriptrid.vkpageobserver.exceptions.PageNotFoundException;
+import ru.scriptrid.vkpageobserver.exceptions.PageNotFoundInVkException;
 import ru.scriptrid.vkpageobserver.model.dto.ObservingPageDto;
 import ru.scriptrid.vkpageobserver.model.entity.PageEntity;
 import ru.scriptrid.vkpageobserver.model.entity.UserEntity;
@@ -13,7 +14,7 @@ import ru.scriptrid.vkpageobserver.model.mapper.PageMapper;
 
 @Service
 public class PageInteractionService {
-    private static final String NON_EXISTENT_USERNAME = "DELETED";
+    public static final String NON_EXISTENT_USERNAME = "DELETED";
 
     private final UserService userService;
 
@@ -43,7 +44,7 @@ public class PageInteractionService {
         } else {
             GetResponse response = vkApiService.requestPage(String.valueOf(pageId));
             if (response.getFirstName().equals(NON_EXISTENT_USERNAME)) {
-                throw new PageNotFoundException();
+                throw new PageNotFoundInVkException();
             }
             pageService.addPage(response, user);
         }

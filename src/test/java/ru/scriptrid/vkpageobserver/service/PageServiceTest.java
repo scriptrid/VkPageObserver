@@ -12,14 +12,12 @@ import static org.junit.jupiter.api.Assertions.*;
 class PageServiceTest extends BaseIntegrationTest {
 
     private final PageService pageService;
-    private final PageInteractionService pageInteractionService;
 
 
     @Autowired
-    public PageServiceTest(PageService pageService, UserService userService, PageInteractionService pageInteractionService) {
+    public PageServiceTest(PageService pageService, UserService userService) {
         super(userService);
         this.pageService = pageService;
-        this.pageInteractionService = pageInteractionService;
     }
 
     @Test
@@ -28,16 +26,21 @@ class PageServiceTest extends BaseIntegrationTest {
         UserEntity user = getUser();
         pageService.addPage(response, user);
         PageEntity page = pageService.getPage(response.getId());
-        assertTrue(pageInteractionService.userHasAPage(user, page));
+        assertEquals(response.getId(), page.getId());
+        assertEquals(response.getFirstName(), page.getFirstName());
+        assertEquals(response.getLastName(), page.getLastName());
+        assertEquals(response.getBdate(), page.getBirthDate());
+        assertEquals(response.getCity().getTitle(), page.getLocation());
     }
 
     @Test
-    void addPageWithEmptyBDateAndCity() {
+    void addPageWithEmptyBDateAndCityToUser() {
         GetResponse response = getResponseWithEmptyBDateAndCity();
         UserEntity user = getUser();
         pageService.addPage(response, user);
         PageEntity page = pageService.getPage(response.getId());
-        assertTrue(pageInteractionService.userHasAPage(user, page));
+        assertNull(page.getBirthDate());
+        assertNull(page.getLocation());
     }
 
     @Test
