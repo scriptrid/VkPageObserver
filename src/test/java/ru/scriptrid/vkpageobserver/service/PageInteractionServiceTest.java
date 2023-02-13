@@ -8,7 +8,7 @@ import org.springframework.boot.test.mock.mockito.SpyBean;
 import ru.scriptrid.vkpageobserver.exceptions.PageAlreadyExistsException;
 import ru.scriptrid.vkpageobserver.exceptions.PageNotFoundInDatabaseException;
 import ru.scriptrid.vkpageobserver.exceptions.PageNotFoundInVkException;
-import ru.scriptrid.vkpageobserver.exceptions.UserHasNotThePageException;
+import ru.scriptrid.vkpageobserver.exceptions.UserDoesNotHaveAPageException;
 import ru.scriptrid.vkpageobserver.model.UserDetailsImpl;
 import ru.scriptrid.vkpageobserver.model.dto.ObservingPageDto;
 import ru.scriptrid.vkpageobserver.model.entity.PageEntity;
@@ -131,7 +131,7 @@ class PageInteractionServiceTest extends BaseIntegrationTest {
         UserEntity otherUser = getUser("otherUser");
         UserDetailsImpl otherUserDetails = new UserDetailsImpl(otherUser);
 
-        assertThrows(UserHasNotThePageException.class,
+        assertThrows(UserDoesNotHaveAPageException.class,
                 () -> pageInteractionService.getObservingPage(otherUserDetails, getResponse().getId()));
     }
 
@@ -154,7 +154,7 @@ class PageInteractionServiceTest extends BaseIntegrationTest {
         UserEntity otherUser = getUser("otherUser");
         UserDetailsImpl otherUserDetails = new UserDetailsImpl(otherUser);
 
-        assertThrows(UserHasNotThePageException.class,
+        assertThrows(UserDoesNotHaveAPageException.class,
                 () -> pageInteractionService.deletePageFromUser(otherUserDetails, page.getId()));
     }
 }

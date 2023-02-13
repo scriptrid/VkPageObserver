@@ -1,6 +1,6 @@
 package ru.scriptrid.vkpageobserver.service;
 
-import ru.scriptrid.vkpageobserver.exceptions.UserHasNotThePageException;
+import ru.scriptrid.vkpageobserver.exceptions.UserDoesNotHaveAPageException;
 import com.vk.api.sdk.objects.users.responses.GetResponse;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
@@ -58,14 +58,14 @@ public class PageInteractionService {
         UserEntity user = userService.getUser(userDetails);
         PageEntity page = pageService.getPage(pageId);
         if (!userHasAPage(user, page)) {
-            throw new UserHasNotThePageException();
+            throw new UserDoesNotHaveAPageException();
         }
         return pageMapper.toDto(page);
     }
     @Transactional
     public void deletePageFromUser(UserDetails userDetails, Integer pageId) {
         if (!isValidUserAndPage(userDetails, pageId)) {
-            throw new UserHasNotThePageException();
+            throw new UserDoesNotHaveAPageException();
         } else {
             UserEntity user = userService.getUser(userDetails);
             PageEntity page = pageService.getPage(pageId);

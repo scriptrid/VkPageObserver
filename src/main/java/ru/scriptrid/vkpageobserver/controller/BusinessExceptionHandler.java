@@ -1,6 +1,6 @@
 package ru.scriptrid.vkpageobserver.controller;
 
-import ru.scriptrid.vkpageobserver.exceptions.UserHasNotThePageException;
+import ru.scriptrid.vkpageobserver.exceptions.UserDoesNotHaveAPageException;
 import ru.scriptrid.vkpageobserver.exceptions.PageAlreadyExistsException;
 import ru.scriptrid.vkpageobserver.exceptions.PageNotFoundInDatabaseException;
 import ru.scriptrid.vkpageobserver.exceptions.PageNotFoundInVkException;
@@ -32,7 +32,7 @@ public class BusinessExceptionHandler extends ResponseEntityExceptionHandler {
         return ResponseEntity.badRequest().build();
     }
 
-    @ExceptionHandler(UserHasNotThePageException.class)
+    @ExceptionHandler(UserDoesNotHaveAPageException.class)
     public ResponseEntity<Void> onUserHasNotThePage() {
         return ResponseEntity.notFound().build();
     }
