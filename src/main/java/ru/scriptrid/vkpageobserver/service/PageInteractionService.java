@@ -1,11 +1,12 @@
 package ru.scriptrid.vkpageobserver.service;
 
+import ru.scriptrid.vkpageobserver.exceptions.UserHasNotThePageException;
 import com.vk.api.sdk.objects.users.responses.GetResponse;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.scriptrid.vkpageobserver.exceptions.PageAlreadyExistsException;
-import ru.scriptrid.vkpageobserver.exceptions.PageNotFoundException;
+import ru.scriptrid.vkpageobserver.exceptions.PageNotFoundInDatabaseException;
 import ru.scriptrid.vkpageobserver.exceptions.PageNotFoundInVkException;
 import ru.scriptrid.vkpageobserver.model.dto.ObservingPageDto;
 import ru.scriptrid.vkpageobserver.model.entity.PageEntity;
@@ -52,23 +53,24 @@ public class PageInteractionService {
 
     public ObservingPageDto getObservingPage(UserDetails userDetails, Integer pageId) {
         if (!pageService.pageExistsById(pageId)) {
-            throw new PageNotFoundException();
+            throw new PageNotFoundInDatabaseException();
         }
         UserEntity user = userService.getUser(userDetails);
         PageEntity page = pageService.getPage(pageId);
         if (!userHasAPage(user, page)) {
-            throw new PageNotFoundException();
+            throw new UserHasNotThePageException();
         }
         return pageMapper.toDto(page);
     }
     @Transactional
     public void deletePageFromUser(UserDetails userDetails, Integer pageId) {
         if (!isValidUserAndPage(userDetails, pageId)) {
-            throw new PageNotFoundException();
+            throw new UserHasNotThePageException();
         } else {
             UserEntity user = userService.getUser(userDetails);
             PageEntity page = pageService.getPage(pageId);
             page.getUsers().remove(user);
+            user.getObservingPages().remove(page);
             if (page.getUsers().isEmpty()) {
                 pageService.deletePage(page);
             }
@@ -78,7 +80,7 @@ public class PageInteractionService {
 
     private boolean isValidUserAndPage(UserDetails userDetails, Integer pageId) {
         if (!pageService.pageExistsById(pageId)) {
-            return false;
+            throw new PageNotFoundInDatabaseException();
         }
         UserEntity user = userService.getUser(userDetails);
         PageEntity page = pageService.getPage(pageId);

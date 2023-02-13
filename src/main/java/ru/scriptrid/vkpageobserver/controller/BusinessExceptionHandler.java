@@ -1,7 +1,8 @@
 package ru.scriptrid.vkpageobserver.controller;
 
+import ru.scriptrid.vkpageobserver.exceptions.UserHasNotThePageException;
 import ru.scriptrid.vkpageobserver.exceptions.PageAlreadyExistsException;
-import ru.scriptrid.vkpageobserver.exceptions.PageNotFoundException;
+import ru.scriptrid.vkpageobserver.exceptions.PageNotFoundInDatabaseException;
 import ru.scriptrid.vkpageobserver.exceptions.PageNotFoundInVkException;
 import ru.scriptrid.vkpageobserver.exceptions.UsernameAlreadyExistsException;
 import org.springframework.http.ResponseEntity;
@@ -16,7 +17,7 @@ public class BusinessExceptionHandler extends ResponseEntityExceptionHandler {
         return ResponseEntity.badRequest().build();
     }
 
-    @ExceptionHandler(PageNotFoundException.class)
+    @ExceptionHandler(PageNotFoundInDatabaseException.class)
     public ResponseEntity<Void> onPageNotFound() {
         return ResponseEntity.notFound().build();
     }
@@ -30,4 +31,10 @@ public class BusinessExceptionHandler extends ResponseEntityExceptionHandler {
     public ResponseEntity<Void> onPageExists() {
         return ResponseEntity.badRequest().build();
     }
+
+    @ExceptionHandler(UserHasNotThePageException.class)
+    public ResponseEntity<Void> onUserHasNotThePage() {
+        return ResponseEntity.notFound().build();
+    }
 }
+
