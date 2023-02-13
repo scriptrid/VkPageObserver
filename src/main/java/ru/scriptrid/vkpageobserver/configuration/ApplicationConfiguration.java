@@ -1,6 +1,5 @@
 package ru.scriptrid.vkpageobserver.configuration;
 
-import ru.scriptrid.vkpageobserver.properties.VkApiProperties;
 import com.vk.api.sdk.client.VkApiClient;
 import com.vk.api.sdk.client.actors.ServiceActor;
 import com.vk.api.sdk.exceptions.ApiException;
@@ -11,6 +10,9 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import ru.scriptrid.vkpageobserver.properties.VkApiProperties;
+
+import java.time.Clock;
 
 @Configuration
 public class ApplicationConfiguration {
@@ -35,5 +37,10 @@ public class ApplicationConfiguration {
         } catch (ApiException | ClientException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    @Bean
+    public Clock clock() {
+        return Clock.systemDefaultZone();
     }
 }
