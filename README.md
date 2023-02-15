@@ -39,7 +39,7 @@ Content-Type: application/json
 
 #### Добавление страницы в список отслеживаемых
 ```http request
-POST /api/page
+POST /api/page/{pageId}
 
 Path variable: "pageId"
 Type: integer
@@ -55,7 +55,7 @@ Cookie: required
 
 #### Получение страницы из списка отслеживаемых
 ```http request
-GET /api/page
+GET /api/page/{pageId}
 
 Path variable: "pageId"
 Type: integer
@@ -103,7 +103,7 @@ Cookie: required
 
 #### Удаление страницы из списка отслеживаемых
 ```http request
-DELETE /api/page
+DELETE /api/page/{pageId}
 
 Path variable: "pageId"
 Type: integer

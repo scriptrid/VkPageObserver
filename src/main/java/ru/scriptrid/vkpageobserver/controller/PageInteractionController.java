@@ -8,7 +8,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/page")
+@RequestMapping("/api/page/{pageId}")
 public class PageInteractionController {
 
     private final PageInteractionService pageInteractionService;
@@ -18,17 +18,17 @@ public class PageInteractionController {
     }
 
     @PostMapping
-    public void addPage(@AuthenticationPrincipal UserDetails userDetails, @RequestParam Integer pageId) {
+    public void addPage(@AuthenticationPrincipal UserDetails userDetails, @PathVariable Integer pageId) {
         pageInteractionService.addPageToUser(userDetails, pageId);
     }
 
     @GetMapping
-    public ObservingPageDto getPage(@AuthenticationPrincipal UserDetails userDetails, @RequestParam Integer pageId) {
+    public ObservingPageDto getPage(@AuthenticationPrincipal UserDetails userDetails, @PathVariable Integer pageId) {
         return pageInteractionService.getObservingPage(userDetails, pageId);
     }
 
     @DeleteMapping
-    public ResponseEntity<Void> deletePage(@AuthenticationPrincipal UserDetails userDetails, @RequestParam Integer pageId) {
+    public ResponseEntity<Void> deletePage(@AuthenticationPrincipal UserDetails userDetails, @PathVariable Integer pageId) {
         pageInteractionService.deletePageFromUser(userDetails, pageId);
         return ResponseEntity.noContent().build();
     }
